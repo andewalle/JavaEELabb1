@@ -8,6 +8,8 @@ import javax.json.JsonReader;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -17,12 +19,17 @@ import java.io.StringReader;
 @ToString
 public class Subject implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
     private String title;
+
+    @ManyToMany(mappedBy = "subject", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<Student> students = new ArrayList<>();
 
     public Subject toEntity(String subjectModel) {
         JsonReader reader = Json.createReader(new StringReader(subjectModel));

@@ -34,4 +34,10 @@ public class SubjectTransaction implements SubjectTransactionAccess{
             return subject;
         }
     }
+
+    @Override
+    public Subject getSubjectByName(String subject) {
+        return (Subject)entityManager.createQuery("SELECT s FROM Subject s WHERE s.title = :title")
+                .setParameter("title", subject).getSingleResult();
+     }
 }

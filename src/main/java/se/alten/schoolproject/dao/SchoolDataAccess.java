@@ -9,6 +9,8 @@ import se.alten.schoolproject.transaction.SubjectTransactionAccess;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -32,17 +34,27 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public StudentModel addStudent(String newStudent) {
+    public Student addStudent(String newStudent) {
         Student studentToAdd = student.toEntity(newStudent);
         boolean checkForEmptyVariables = Stream.of(studentToAdd.getForename(), studentToAdd.getLastname(), studentToAdd.getEmail()).anyMatch(String::isBlank);
 
-        if (checkForEmptyVariables) {
+       /* if (checkForEmptyVariables) {
             studentToAdd.setForename("empty");
             return studentModel.toModel(studentToAdd);
-        } else {
-            studentTransactionAccess.addStudent(studentToAdd);
-            return studentModel.toModel(studentToAdd);
-        }
+        } else {*/
+
+            Subject findSubject = subjectTransactionAccess.getSubjectByName("CI/CD");
+            System.out.println(findSubject.toString());
+
+            Student student = studentTransactionAccess.addStudent(studentToAdd);
+            System.out.println(student.toString());
+
+        System.out.println("#####################################################################");
+            studentToAdd.getSubject().add(findSubject);
+
+
+            return (studentToAdd);
+    //    }
     }
 
     @Override

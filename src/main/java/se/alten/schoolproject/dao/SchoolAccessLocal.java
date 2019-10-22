@@ -1,5 +1,6 @@
 package se.alten.schoolproject.dao;
 
+import se.alten.schoolproject.entity.Student;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.model.SubjectModel;
 
@@ -11,7 +12,7 @@ public interface SchoolAccessLocal {
 
     List listAllStudents();
 
-    StudentModel addStudent(String studentModel);
+    Student addStudent(String studentModel);
 
     void removeStudent(String student);
 

@@ -1,7 +1,6 @@
 package se.alten.schoolproject.entity;
 
 import lombok.*;
-import se.alten.schoolproject.model.StudentModel;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -9,6 +8,8 @@ import javax.json.JsonReader;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name="student")
@@ -19,8 +20,11 @@ import java.io.StringReader;
 @ToString
 public class Student implements Serializable {
 
+    private static final long serialVersionUID = 1L;
+
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="id")
     private Long id;
 
     @Column(name = "forename")
@@ -31,6 +35,12 @@ public class Student implements Serializable {
 
     @Column(name = "email", unique = true)
     private String email;
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(name = "student_subject",
+                joinColumns=@JoinColumn(name="stud_id", referencedColumnName = "id"),
+                inverseJoinColumns = @JoinColumn(name = "subj_id", referencedColumnName = "id"))
+    private List<Subject> subject = new ArrayList<>();
 
     public Student toEntity(String studentModel) {
         JsonReader reader = Json.createReader(new StringReader(studentModel));

@@ -2,6 +2,7 @@ package se.alten.schoolproject.rest;
 
 import lombok.NoArgsConstructor;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
+import se.alten.schoolproject.entity.Student;
 import se.alten.schoolproject.model.StudentModel;
 
 import javax.ejb.Stateless;
@@ -40,7 +41,7 @@ public class StudentController {
     public Response addStudent(String studentModel) {
         try {
 
-            StudentModel answer = sal.addStudent(studentModel);
+            Student answer = sal.addStudent(studentModel);
 
             switch ( answer.getForename()) {
                 case "empty":
