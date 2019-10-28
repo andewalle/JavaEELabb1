@@ -9,6 +9,7 @@ import se.alten.schoolproject.transaction.SubjectTransactionAccess;
 
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,31 +31,34 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
 
     @Override
     public List listAllStudents(){
-        return studentTransactionAccess.listAllStudents();
+        List<StudentModel> sm = studentModel.toModelList(studentTransactionAccess.listAllStudents());
+        return sm;
     }
 
     @Override
-    public Student addStudent(String newStudent) {
+    public StudentModel addStudent(String newStudent) {
         Student studentToAdd = student.toEntity(newStudent);
         boolean checkForEmptyVariables = Stream.of(studentToAdd.getForename(), studentToAdd.getLastname(), studentToAdd.getEmail()).anyMatch(String::isBlank);
 
-       /* if (checkForEmptyVariables) {
+        if (checkForEmptyVariables) {
             studentToAdd.setForename("empty");
             return studentModel.toModel(studentToAdd);
-        } else {*/
+        } else {
+           studentTransactionAccess.addStudent(studentToAdd);
 
-            Subject findSubject = subjectTransactionAccess.getSubjectByName("CI/CD");
-            System.out.println(findSubject.toString());
+            studentToAdd.getSubjects().forEach(sub -> {
+                Subject findSubject = subjectTransactionAccess.getSubjectByName("Java");
+                System.out.println(findSubject.toString());
+            });
+  //          studentToAdd.getSubjects().forEach( sub -> {
+  //
+  //              System.out.println(findSubject.toString());
+        //        studentToAdd.getSubject().add(findSubject);
+  //          });
 
-            Student student = studentTransactionAccess.addStudent(studentToAdd);
-            System.out.println(student.toString());
-
-        System.out.println("#####################################################################");
-            studentToAdd.getSubject().add(findSubject);
-
-
-            return (studentToAdd);
-    //    }
+            return null;
+            //return (studentToAdd);
+        }
     }
 
     @Override

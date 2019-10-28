@@ -25,6 +25,7 @@ public class StudentController {
     public Response showStudents() {
         try {
             List students = sal.listAllStudents();
+            System.out.println(students.toString());
             return Response.ok(students).build();
         } catch ( Exception e ) {
             return Response.status(Response.Status.CONFLICT).build();
@@ -41,7 +42,7 @@ public class StudentController {
     public Response addStudent(String studentModel) {
         try {
 
-            Student answer = sal.addStudent(studentModel);
+            StudentModel answer = sal.addStudent(studentModel);
 
             switch ( answer.getForename()) {
                 case "empty":

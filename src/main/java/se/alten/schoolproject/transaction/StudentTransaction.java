@@ -8,6 +8,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Stateless
@@ -19,7 +20,7 @@ public class StudentTransaction implements StudentTransactionAccess{
 
     @Override
     public List listAllStudents() {
-        Query query = entityManager.createQuery("SELECT s from Student s");
+        Query query = entityManager.createQuery("SELECT s FROM Student s JOIN FETCH s.subject t");
         return query.getResultList();
     }
 
