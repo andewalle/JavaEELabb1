@@ -1,5 +1,7 @@
 package se.alten.schoolproject.transaction;
 
+import org.hibernate.Session;
+import se.alten.schoolproject.entity.Student;
 import se.alten.schoolproject.entity.Subject;
 
 import javax.ejb.Stateless;
@@ -9,6 +11,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
 import java.util.List;
+import java.util.Optional;
 
 @Stateless
 @Default
@@ -37,8 +40,12 @@ public class SubjectTransaction implements SubjectTransactionAccess{
 
     @Override
     public Subject getSubjectByName(String subject) {
-        System.out.println("AQUI");
-        return (Subject)entityManager.createQuery("SELECT s FROM Subject s WHERE s.title = :title")
-                .setParameter("title", subject).getSingleResult();
+        System.out.println(subject);
+        Query query = entityManager.createNativeQuery("SELECT * FROM Subject WHERE title = :subject", Subject.class);
+
+        Subject t = (Subject)query.setParameter("subject", subject).getSingleResult();
+        System.out.println(t.toString());
+
+        return t;
      }
 }

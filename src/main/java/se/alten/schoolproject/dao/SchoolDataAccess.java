@@ -44,17 +44,17 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
             studentToAdd.setForename("empty");
             return studentModel.toModel(studentToAdd);
         } else {
-           studentTransactionAccess.addStudent(studentToAdd);
+           //studentTransactionAccess.addStudent(studentToAdd);
 
-            studentToAdd.getSubjects().forEach(sub -> {
-                Subject findSubject = subjectTransactionAccess.getSubjectByName("Java");
-                System.out.println(findSubject.toString());
-            });
-  //          studentToAdd.getSubjects().forEach( sub -> {
+
+
+            studentToAdd.getSubjects().forEach( sub -> {
+                Subject test = subjectTransactionAccess.getSubjectByName(sub);
+                System.out.println(test.toString());
   //
   //              System.out.println(findSubject.toString());
         //        studentToAdd.getSubject().add(findSubject);
-  //          });
+            });
 
             return null;
             //return (studentToAdd);
