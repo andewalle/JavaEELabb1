@@ -9,5 +9,5 @@ import java.util.List;
 public interface SubjectTransactionAccess {
     List listAllSubjects();
     Subject addSubject(Subject subject);
-    Subject getSubjectByName(String subject);
+    List<Subject> getSubjectByName(List<String> subject);
 }

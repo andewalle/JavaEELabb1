@@ -16,7 +16,6 @@ import java.util.Set;
 @ToString
 public class StudentModel {
 
-    private Long id;
     private String forename;
     private String lastname;
     private String email;
@@ -24,10 +23,6 @@ public class StudentModel {
 
     public StudentModel toModel(Student student) {
         StudentModel studentModel = new StudentModel();
-
-        System.out.println("---------------------------------------------------------------------");
-        System.out.println(student.toString());
-        System.out.println("---------------------------------------------------------------------");
 
         switch (student.getForename()) {
             case "empty":
@@ -40,6 +35,9 @@ public class StudentModel {
                 studentModel.setForename(student.getForename());
                 studentModel.setLastname(student.getLastname());
                 studentModel.setEmail(student.getEmail());
+                student.getSubject().forEach(subject -> {
+                    studentModel.subjects.add(subject.getTitle());
+                });
                 return studentModel;
         }
     }

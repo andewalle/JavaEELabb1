@@ -5,10 +5,7 @@ import javax.json.*;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Entity
 @Table(name="student")
@@ -73,7 +70,7 @@ public class Student implements Serializable {
         if (jsonObject.containsKey("subject")) {
             JsonArray jsonArray = jsonObject.getJsonArray("subject");
             for ( int i = 0; i < jsonArray.size(); i++ ){
-                temp.add(jsonArray.get(i).toString());
+                temp.add(jsonArray.get(i).toString().replace("\"", ""));
                 student.setSubjects(temp);
             }
         } else {

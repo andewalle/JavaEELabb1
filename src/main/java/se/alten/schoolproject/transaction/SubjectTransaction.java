@@ -6,10 +6,8 @@ import se.alten.schoolproject.entity.Subject;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.PersistenceException;
-import javax.persistence.Query;
+import javax.persistence.*;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,13 +37,12 @@ public class SubjectTransaction implements SubjectTransactionAccess{
     }
 
     @Override
-    public Subject getSubjectByName(String subject) {
-        System.out.println(subject);
-        Query query = entityManager.createNativeQuery("SELECT * FROM Subject WHERE title = :subject", Subject.class);
+    public List<Subject> getSubjectByName(List<String> subject) {
 
-        Subject t = (Subject)query.setParameter("subject", subject).getSingleResult();
-        System.out.println(t.toString());
+        String queryStr = "SELECT sub FROM Subject sub WHERE sub.title IN :subject";
+        TypedQuery<Subject> query = entityManager.createQuery(queryStr, Subject.class);
+        query.setParameter("subject", subject);
 
-        return t;
+        return query.getResultList();
      }
 }
