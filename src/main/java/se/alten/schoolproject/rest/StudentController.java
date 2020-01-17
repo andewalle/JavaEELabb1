@@ -4,7 +4,7 @@ import lombok.NoArgsConstructor;
 import org.apache.commons.cli.MissingArgumentException;
 import org.apache.log4j.Logger;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
-import se.alten.schoolproject.exceptions.DuplicateEmail;
+
 import se.alten.schoolproject.exceptions.GeneralException;
 import se.alten.schoolproject.model.StudentModel;
 
@@ -33,6 +33,7 @@ public class StudentController {
 //        logger.error("Error message");
         try {
             List students = sal.listAllStudents();
+            System.out.println(students.toString());
             return Response.ok(students).build();
         } catch ( Exception e ) {
             return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
