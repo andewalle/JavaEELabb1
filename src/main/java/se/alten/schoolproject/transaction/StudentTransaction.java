@@ -1,6 +1,9 @@
 package se.alten.schoolproject.transaction;
 
+import org.opensaml.xmlsec.signature.Q;
 import se.alten.schoolproject.entity.Student;
+import se.alten.schoolproject.exceptions.DuplicateEmail;
+import se.alten.schoolproject.exceptions.GeneralException;
 
 import javax.ejb.Stateless;
 import javax.enterprise.inject.Default;
@@ -18,52 +21,85 @@ public class StudentTransaction implements StudentTransactionAccess{
     private EntityManager entityManager;
 
     @Override
-    public List listAllStudents() {
+    public List listAllStudents() throws GeneralException {
+        try{
         Query query = entityManager.createQuery("SELECT s from Student s");
-        return query.getResultList();
+        return query.getResultList();}
+        catch (PersistenceException pe){
+            throw new GeneralException("Something went wrong", pe);
+        }
     }
 
     @Override
-    public Student addStudent(Student studentToAdd) {
+    public List listSpecificStudent(String student) throws GeneralException {
+
+        try {
+            Query query = entityManager.createQuery("SELECT s from Student s WHERE s.forename = :forename")
+                    .setParameter("forename", student);
+            return query.getResultList();
+        }
+        catch (PersistenceException pe){
+            throw new GeneralException("Something went wrong", pe);
+        }
+    }
+
+    @Override
+    public Student addStudent(Student studentToAdd) throws DuplicateEmail {
         try {
             entityManager.persist(studentToAdd);
             entityManager.flush();
             return studentToAdd;
         } catch ( PersistenceException pe ) {
-            studentToAdd.setForename("duplicate");
-            return studentToAdd;
+            throw new DuplicateEmail("Email exists", pe);
         }
     }
 
     @Override
-    public void removeStudent(String student) {
-        //JPQL Query
-        Query query = entityManager.createQuery("DELETE FROM Student s WHERE s.email = :email");
+    public void removeStudent(String student) throws GeneralException {
 
-        //Native Query
-        //Query query = entityManager.createNativeQuery("DELETE FROM student WHERE email = :email", Student.class);
+        try {
+            //JPQL Query
+            Query query = entityManager.createQuery("DELETE FROM Student s WHERE s.email = :email");
 
-        query.setParameter("email", student)
-             .executeUpdate();
+            //Native Query
+            //Query query = entityManager.createNativeQuery("DELETE FROM student WHERE email = :email", Student.class);
+
+            query.setParameter("email", student)
+                    .executeUpdate();
+        }
+        catch (PersistenceException pe){
+            throw new GeneralException("Could not remove student", pe);
+        }
     }
 
     @Override
-    public void updateStudent(String forename, String lastname, String email) {
-        Query updateQuery = entityManager.createNativeQuery("UPDATE student SET forename = :forename, lastname = :lastname WHERE email = :email", Student.class);
-        updateQuery.setParameter("forename", forename)
-                   .setParameter("lastname", lastname)
-                   .setParameter("email", email)
-                   .executeUpdate();
+    public void updateStudent(String forename, String lastname, String email) throws GeneralException {
+
+        try {
+            Query updateQuery = entityManager.createNativeQuery("UPDATE student SET forename = :forename, lastname = :lastname WHERE email = :email", Student.class);
+            updateQuery.setParameter("forename", forename)
+                    .setParameter("lastname", lastname)
+                    .setParameter("email", email)
+                    .executeUpdate();
+        }
+        catch (PersistenceException pe){
+            throw new GeneralException("Could not update student", pe);
+        }
     }
 
     @Override
-    public void updateStudentPartial(Student student) {
-        Student studentFound = (Student)entityManager.createQuery("SELECT s FROM Student s WHERE s.email = :email")
-                .setParameter("email", student.getEmail()).getSingleResult();
+    public void updateStudentPartial(Student student) throws GeneralException {
 
-        Query query = entityManager.createQuery("UPDATE Student SET forename = :studentForename WHERE email = :email");
-        query.setParameter("studentForename", student.getForename())
-                .setParameter("email", studentFound.getEmail())
-                .executeUpdate();
+        try {
+            Student studentFound = (Student) entityManager.createQuery("SELECT s FROM Student s WHERE s.email = :email")
+                    .setParameter("email", student.getEmail()).getSingleResult();
+
+            Query query = entityManager.createQuery("UPDATE Student SET forename = :studentForename WHERE email = :email");
+            query.setParameter("studentForename", student.getForename())
+                    .setParameter("email", studentFound.getEmail())
+                    .executeUpdate();
+        }catch (PersistenceException pe){
+            throw new GeneralException("Could not update student", pe);
+        }
     }
 }

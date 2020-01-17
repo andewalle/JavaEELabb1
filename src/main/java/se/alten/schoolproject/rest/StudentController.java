@@ -1,7 +1,10 @@
 package se.alten.schoolproject.rest;
 
 import lombok.NoArgsConstructor;
+import org.apache.commons.cli.MissingArgumentException;
+import org.apache.log4j.Logger;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
+import se.alten.schoolproject.exceptions.DuplicateEmail;
 import se.alten.schoolproject.model.StudentModel;
 
 import javax.ejb.Stateless;
@@ -16,16 +19,34 @@ import java.util.List;
 @Path("/student")
 public class StudentController {
 
+    private static Logger logger = Logger.getLogger(StudentController.class);
+
+
     @Inject
     private SchoolAccessLocal sal;
 
     @GET
     @Produces({"application/JSON"})
     public Response showStudents() {
+//        logger.info("In show students");
+//        logger.error("Error message");
         try {
             List students = sal.listAllStudents();
             return Response.ok(students).build();
         } catch ( Exception e ) {
+            return Response.status(Response.Status.CONFLICT).build();
+        }
+    }
+
+    @GET
+    @Path("{forename}")
+    @Produces({"application/JSON"})
+    public Response searchStudent(@PathParam ("forename") String student){
+        try {
+            List students = sal.listSpecificStudent(student);
+            return Response.ok(students).build();
+        }
+        catch (Exception e){
             return Response.status(Response.Status.CONFLICT).build();
         }
     }
@@ -38,20 +59,17 @@ public class StudentController {
      * JavaDoc
      */
     public Response addStudent(String studentModel) {
+        StudentModel answer = new StudentModel();
         try {
 
-            StudentModel answer = sal.addStudent(studentModel);
+            answer = sal.addStudent(studentModel);
 
-            switch ( answer.getForename()) {
-                case "empty":
-                    return Response.status(Response.Status.NOT_ACCEPTABLE).entity("{\"Fill in all details please\"}").build();
-                case "duplicate":
-                    return Response.status(Response.Status.EXPECTATION_FAILED).entity("{\"Email already registered!\"}").build();
-                default:
-                    return Response.ok(answer).build();
-            }
+            return Response.ok(answer).build();
+
         } catch ( Exception e ) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            System.out.println(e.getMessage() );
+
+            return Response.status(Response.Status.EXPECTATION_FAILED).entity(e.getMessage()).build();
         }
     }
 
@@ -72,7 +90,7 @@ public class StudentController {
     }
 
     @PATCH
-    public void updatePartialAStudent(String studentModel) {
+    public void updatePartialAStudent(String studentModel) throws MissingArgumentException {
         sal.updateStudentPartial(studentModel);
     }
 }

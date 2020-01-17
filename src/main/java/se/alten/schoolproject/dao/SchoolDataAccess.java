@@ -1,6 +1,8 @@
 package se.alten.schoolproject.dao;
 
+import org.apache.commons.cli.MissingArgumentException;
 import se.alten.schoolproject.entity.Student;
+import se.alten.schoolproject.exceptions.DuplicateEmail;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.transaction.StudentTransactionAccess;
 
@@ -24,17 +26,16 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public StudentModel addStudent(String newStudent) {
-        Student studentToAdd = student.toEntity(newStudent);
-        boolean checkForEmptyVariables = Stream.of(studentToAdd.getForename(), studentToAdd.getLastname(), studentToAdd.getEmail()).anyMatch(String::isBlank);
+    public List listSpecificStudent(String student){return studentTransactionAccess.listSpecificStudent(student);}
 
-        if (checkForEmptyVariables) {
-            studentToAdd.setForename("empty");
-            return studentModel.toModel(studentToAdd);
-        } else {
-            studentTransactionAccess.addStudent(studentToAdd);
-            return studentModel.toModel(studentToAdd);
-        }
+    @Override
+    public StudentModel addStudent(String newStudent) throws MissingArgumentException, DuplicateEmail {
+        Student studentToAdd = null;
+
+        studentToAdd = student.toEntity(newStudent);
+
+        studentTransactionAccess.addStudent(studentToAdd);
+        return studentModel.toModel(studentToAdd);
     }
 
     @Override
@@ -48,7 +49,7 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public void updateStudentPartial(String studentModel) {
+    public void updateStudentPartial(String studentModel) throws MissingArgumentException {
         Student studentToUpdate = student.toEntity(studentModel);
         studentTransactionAccess.updateStudentPartial(studentToUpdate);
     }
