@@ -6,4 +6,8 @@ public class GeneralException extends Exception {
                               Throwable error) {
             super (errorMessage, error);
         }
+
+        public GeneralException(String error) {
+            super(error);
+        }
 }

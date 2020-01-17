@@ -3,6 +3,7 @@ package se.alten.schoolproject.dao;
 import org.apache.commons.cli.MissingArgumentException;
 import se.alten.schoolproject.entity.Student;
 import se.alten.schoolproject.exceptions.DuplicateEmail;
+import se.alten.schoolproject.exceptions.GeneralException;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.transaction.StudentTransactionAccess;
 
@@ -21,12 +22,12 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     StudentTransactionAccess studentTransactionAccess;
 
     @Override
-    public List listAllStudents(){
+    public List listAllStudents() throws GeneralException {
         return studentTransactionAccess.listAllStudents();
     }
 
     @Override
-    public List listSpecificStudent(String student){return studentTransactionAccess.listSpecificStudent(student);}
+    public List listSpecificStudent(String student) throws GeneralException {return studentTransactionAccess.listSpecificStudent(student);}
 
     @Override
     public StudentModel addStudent(String newStudent) throws MissingArgumentException, DuplicateEmail {
@@ -39,17 +40,17 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
     }
 
     @Override
-    public void removeStudent(String studentEmail) {
+    public void removeStudent(String studentEmail) throws GeneralException {
         studentTransactionAccess.removeStudent(studentEmail);
     }
 
     @Override
-    public void updateStudent(String forename, String lastname, String email) {
+    public void updateStudent(String forename, String lastname, String email) throws GeneralException {
         studentTransactionAccess.updateStudent(forename, lastname, email);
     }
 
     @Override
-    public void updateStudentPartial(String studentModel) throws MissingArgumentException {
+    public void updateStudentPartial(String studentModel) throws MissingArgumentException, GeneralException {
         Student studentToUpdate = student.toEntity(studentModel);
         studentTransactionAccess.updateStudentPartial(studentToUpdate);
     }

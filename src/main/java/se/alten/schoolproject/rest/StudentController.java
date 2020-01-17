@@ -5,6 +5,7 @@ import org.apache.commons.cli.MissingArgumentException;
 import org.apache.log4j.Logger;
 import se.alten.schoolproject.dao.SchoolAccessLocal;
 import se.alten.schoolproject.exceptions.DuplicateEmail;
+import se.alten.schoolproject.exceptions.GeneralException;
 import se.alten.schoolproject.model.StudentModel;
 
 import javax.ejb.Stateless;
@@ -34,7 +35,7 @@ public class StudentController {
             List students = sal.listAllStudents();
             return Response.ok(students).build();
         } catch ( Exception e ) {
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
@@ -47,7 +48,7 @@ public class StudentController {
             return Response.ok(students).build();
         }
         catch (Exception e){
-            return Response.status(Response.Status.CONFLICT).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
@@ -80,17 +81,30 @@ public class StudentController {
             sal.removeStudent(email);
             return Response.ok().build();
         } catch ( Exception e ) {
-            return Response.status(Response.Status.BAD_REQUEST).build();
+            return Response.status(Response.Status.NOT_FOUND).entity(e.getMessage()).build();
         }
     }
 
     @PUT
-    public void updateStudent( @QueryParam("forename") String forename, @QueryParam("lastname") String lastname, @QueryParam("email") String email) {
-        sal.updateStudent(forename, lastname, email);
+    public Response updateStudent( @QueryParam("forename") String forename, @QueryParam("lastname") String lastname, @QueryParam("email") String email) throws GeneralException {
+
+        try {
+            sal.updateStudent(forename, lastname, email);
+            return Response.ok().build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_GATEWAY).entity(e.getMessage()).build();
+        }
+        //fixa status codes och try catch
     }
 
     @PATCH
-    public void updatePartialAStudent(String studentModel) throws MissingArgumentException {
+    public Response updatePartialAStudent(String studentModel) throws MissingArgumentException, GeneralException {
+        try{
         sal.updateStudentPartial(studentModel);
+        return Response.ok().build();
+        }
+        catch (Exception e){
+            return Response.status(Response.Status.BAD_GATEWAY).entity(e.getMessage()).build();
+        }
     }
 }

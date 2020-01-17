@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceException;
 import javax.persistence.Query;
+import java.util.EmptyStackException;
 import java.util.List;
 
 @Stateless
@@ -25,8 +26,8 @@ public class StudentTransaction implements StudentTransactionAccess{
         try{
         Query query = entityManager.createQuery("SELECT s from Student s");
         return query.getResultList();}
-        catch (PersistenceException pe){
-            throw new GeneralException("Something went wrong", pe);
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", e);
         }
     }
 
@@ -38,8 +39,8 @@ public class StudentTransaction implements StudentTransactionAccess{
                     .setParameter("forename", student);
             return query.getResultList();
         }
-        catch (PersistenceException pe){
-            throw new GeneralException("Something went wrong", pe);
+        catch (Exception e){
+            throw new GeneralException("Something went wrong", e);
         }
     }
 
@@ -50,26 +51,27 @@ public class StudentTransaction implements StudentTransactionAccess{
             entityManager.flush();
             return studentToAdd;
         } catch ( PersistenceException pe ) {
-            throw new DuplicateEmail("Email exists", pe);
+            throw new DuplicateEmail("Email alredy exists", pe);
         }
     }
 
     @Override
     public void removeStudent(String student) throws GeneralException {
 
-        try {
             //JPQL Query
             Query query = entityManager.createQuery("DELETE FROM Student s WHERE s.email = :email");
 
             //Native Query
             //Query query = entityManager.createNativeQuery("DELETE FROM student WHERE email = :email", Student.class);
 
-            query.setParameter("email", student)
+            int i = query.setParameter("email", student)
                     .executeUpdate();
-        }
-        catch (PersistenceException pe){
-            throw new GeneralException("Could not remove student", pe);
-        }
+            //404
+
+            System.out.println(i);
+            if (i == 0){
+                throw new GeneralException("Could not remove student");
+            }
     }
 
     @Override
@@ -82,24 +84,24 @@ public class StudentTransaction implements StudentTransactionAccess{
                     .setParameter("email", email)
                     .executeUpdate();
         }
-        catch (PersistenceException pe){
-            throw new GeneralException("Could not update student", pe);
+        catch (Exception e){
+            throw new GeneralException("Could not update student");
         }
     }
 
     @Override
     public void updateStudentPartial(Student student) throws GeneralException {
-
-        try {
+        try{
             Student studentFound = (Student) entityManager.createQuery("SELECT s FROM Student s WHERE s.email = :email")
                     .setParameter("email", student.getEmail()).getSingleResult();
-
+            System.out.println(student.toString());
             Query query = entityManager.createQuery("UPDATE Student SET forename = :studentForename WHERE email = :email");
             query.setParameter("studentForename", student.getForename())
                     .setParameter("email", studentFound.getEmail())
-                    .executeUpdate();
-        }catch (PersistenceException pe){
-            throw new GeneralException("Could not update student", pe);
+                    .executeUpdate();}
+        catch (Exception e){
+
+            throw new GeneralException("Could not update student");
         }
     }
 }
