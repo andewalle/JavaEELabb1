@@ -84,7 +84,7 @@ public class TeacherTransaction implements TeacherTransactionAccess {
                     .executeUpdate();
         }
         catch (Exception e){
-            throw new GeneralException("Could not update student");
+            throw new GeneralException("Could not update teacher");
         }
 
     }
@@ -102,7 +102,7 @@ public class TeacherTransaction implements TeacherTransactionAccess {
                     .executeUpdate();}
         catch (Exception e){
 
-            throw new GeneralException("Could not update student");
+            throw new GeneralException("Could not update teacher");
         }
 
     }
