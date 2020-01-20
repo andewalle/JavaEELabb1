@@ -28,8 +28,17 @@ public class Subject implements Serializable {
     @Column
     private String title;
 
-    @ManyToMany(mappedBy = "subject", cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "student_subject",
+            joinColumns=@JoinColumn(name="subj_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "stud_id", referencedColumnName = "id"))
     private Set<Student> students = new HashSet<>();
+
+    @ManyToMany(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JoinTable(name = "teacher_subject",
+            joinColumns=@JoinColumn(name="teach_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "subj_id", referencedColumnName = "id"))
+    private Set<Teacher> teachers = new HashSet<>();
 
     public Subject toEntity(String subjectModel) {
         JsonReader reader = Json.createReader(new StringReader(subjectModel));

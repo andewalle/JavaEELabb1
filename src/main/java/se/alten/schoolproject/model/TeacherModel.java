@@ -33,6 +33,10 @@ public class TeacherModel {
             teacherModel.setForename(teacher.getForename());
             teacherModel.setLastname(teacher.getLastname());
             teacherModel.setEmail(teacher.getEmail());
+            teacher.getSubject().forEach(subject -> {
+
+                teacherModel.subjects.add(subject.getTitle());
+            });
             return teacherModel;
 
         }

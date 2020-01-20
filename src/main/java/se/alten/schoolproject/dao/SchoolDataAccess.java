@@ -7,6 +7,7 @@ import se.alten.schoolproject.exceptions.GeneralException;
 import se.alten.schoolproject.entity.Subject;
 import se.alten.schoolproject.model.StudentModel;
 import se.alten.schoolproject.model.SubjectModel;
+import se.alten.schoolproject.model.TeacherModel;
 import se.alten.schoolproject.transaction.StudentTransactionAccess;
 import se.alten.schoolproject.transaction.SubjectTransactionAccess;
 
@@ -76,5 +77,35 @@ public class SchoolDataAccess implements SchoolAccessLocal, SchoolAccessRemote {
         Subject subjectToAdd = subject.toEntity(newSubject);
         subjectTransactionAccess.addSubject(subjectToAdd);
         return subjectModel.toModel(subjectToAdd);
+    }
+
+    @Override
+    public List listAllTeachers() throws GeneralException {
+        return null;
+    }
+
+    @Override
+    public List listSpecificTeacher(String teacher) throws Exception {
+        return null;
+    }
+
+    @Override
+    public TeacherModel addTeacher(String teacherModel) throws MissingArgumentException, DuplicateEmail {
+        return null;
+    }
+
+    @Override
+    public void removeTeacher(String email) throws GeneralException {
+
+    }
+
+    @Override
+    public void updateTeacher(String forename, String lastname, String email) throws GeneralException {
+
+    }
+
+    @Override
+    public void updateTeacherPartial(String teacherModel) throws MissingArgumentException, GeneralException {
+
     }
 }
